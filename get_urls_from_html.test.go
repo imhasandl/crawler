@@ -124,7 +124,7 @@ func TestURLsFromHTML(t *testing.T) {
 				return
 			} else if err != nil && tc.errorContains == "" {
 				t.Errorf("Test Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
-				return 
+				return
 			} else if err == nil && tc.errorContains != "" {
 				t.Errorf("Test %v - %s FAIL: expected error cotaining: %s", i, tc.name, tc.errorContains)
 				return
