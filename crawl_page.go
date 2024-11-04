@@ -7,17 +7,22 @@ import (
 
 func (cfg *config) crawlPage(rawCurrentURL string) {
 	cfg.concurrencyControl <- struct{}{}
-	defer func(){
+	defer func() {
 		<-cfg.concurrencyControl
 		cfg.wg.Done()
 	}()
 
-	currentURL, err := url.Parse(rawCurrentURL)
-	if err != nil {
-		fmt.Printf("Error - url parse: %v", err)
+	if cfg.pagesLen() >= cfg.maxPages {
 		return
 	}
 
+	currentURL, err := url.Parse(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", rawCurrentURL, err)
+		return
+	}
+
+	// skip other websites
 	if currentURL.Hostname() != cfg.baseURL.Hostname() {
 		return
 	}
@@ -32,7 +37,7 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	if !isFirst {
 		return
 	}
-	
+
 	fmt.Printf("crawling %s\n", rawCurrentURL)
 
 	htmlBody, err := getHTML(rawCurrentURL)

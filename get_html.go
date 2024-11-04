@@ -20,7 +20,7 @@ func getHTML(rawURL string) (string, error) {
 
 	contentType := res.Header.Get("Content-Type")
 	if !strings.Contains(contentType, "text/html") {
-		return "", fmt.Errorf("got non-HTML response: %s", err)
+		return "", fmt.Errorf("got non-HTML response: %s", contentType)
 	}
 
 	htmlBodyBytes, err := io.ReadAll(res.Body)
@@ -29,5 +29,6 @@ func getHTML(rawURL string) (string, error) {
 	}
 
 	htmlBody := string(htmlBodyBytes)
+
 	return htmlBody, nil
 }
