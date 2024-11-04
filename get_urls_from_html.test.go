@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/url"
 	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestURLsFromHTML(t *testing.T) {
+func TestGetURLsFromHTML(t *testing.T) {
 	cases := []struct {
 		name          string
 		inputURL      string
@@ -101,46 +100,29 @@ func TestURLsFromHTML(t *testing.T) {
 `,
 			expected: nil,
 		},
-		{
-			name:     "handle invalid base URL",
-			inputURL: `:\\invalidBaseURL`,
-			inputBody: `
-<html>
-	<body>
-		<a href="/path">
-			<span>Boot.dev</span>
-		</a>
-	</body>
-</html>
-`,
-			expected:      nil,
-			errorContains: "couldn't parse base URL",
-		},
 	}
 
 	for i, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			baseURL, err := url.Parse(tc.inputURL)
-
 			if err != nil {
-				fmt.Printf("Error - url parse: %v", err)
+				t.Errorf("Test %v - '%s' FAIL: couldn't parse input URL: %v", i, tc.name, err)
 				return
 			}
 
 			actual, err := getURLsFromHTML(tc.inputBody, baseURL)
-
 			if err != nil && !strings.Contains(err.Error(), tc.errorContains) {
 				t.Errorf("Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
 				return
 			} else if err != nil && tc.errorContains == "" {
-				t.Errorf("Test Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
+				t.Errorf("Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
 				return
 			} else if err == nil && tc.errorContains != "" {
-				t.Errorf("Test %v - %s FAIL: expected error cotaining: %s", i, tc.name, tc.errorContains)
+				t.Errorf("Test %v - '%s' FAIL: expected error containing '%v', got none.", i, tc.name, tc.errorContains)
 				return
 			}
 
-			if !reflect.DeepEqual(actual, tc.expected){
+			if !reflect.DeepEqual(actual, tc.expected) {
 				t.Errorf("Test %v - '%s' FAIL: expected URLs %v, got URLs %v", i, tc.name, tc.expected, actual)
 				return
 			}

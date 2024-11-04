@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetURLsFromHTML(t *testing.T) {
+func TestNormalizeURL(t *testing.T) {
 	tests := []struct {
 		name          string
 		inputURL      string
